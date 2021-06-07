@@ -11,8 +11,10 @@ To get the code:
 > git clone git@github.com:mrcthiel/CSCRPCAssociation.git\
 > scram b -j8\
 > cd CSCRPCAssociation/CSCRPCAssociation\
+
 To run:
 >cmsRun run_CSC_and_RPC_rechits_and_segments_cfg.py\
+
 To run:
 >cmsRun cscrpc_reco.py\
 
