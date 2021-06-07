@@ -1,6 +1,6 @@
 # CSCRPCAssociation
 
-This is a simple analyzer created with the command *mkedanlzr* and modified to print the CSC-RPC correlations in the screem. The code was adapted from the module:
+This is a simple analyzer created with the command *mkedanlzr* and modified to print the CSC-RPC correlations on the screen. The code was adapted from the module:
 https://github.com/cms-sw/cmssw/blob/master/RecoLocalMuon/RPCRecHit/src/CSCSegtoRPC.cc
 
 To run, follow the commands.
