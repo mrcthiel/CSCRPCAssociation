@@ -6,6 +6,7 @@ https://github.com/cms-sw/cmssw/blob/master/RecoLocalMuon/RPCRecHit/src/CSCSegto
 To run, follow the commands.
 To get the code:
 > cmsrel CMSSW_10_6_0_patch2
+
 > cmsenv
 > cd CMSSW_10_6_0_patch2/src/
 > git clone git@github.com:mrcthiel/CSCRPCAssociation.git
