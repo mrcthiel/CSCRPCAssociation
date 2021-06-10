@@ -23,11 +23,12 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2023_realistic_v3'
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
-   fileNames = cms.untracked.vstring('file:CSC_and_RPC.root')
+#   fileNames = cms.untracked.vstring('file:CSC_and_RPC.root')
+   fileNames = cms.untracked.vstring('file:L1T-PhaseIITDRSpring19DR-00054.root')
 )
 
 process.TFileService = cms.Service("TFileService",
-	fileName = cms.string("output.root"),
+	fileName = cms.string("output_rumi.root"),
 	closeFileFast = cms.untracked.bool(True))
 
 
@@ -35,6 +36,7 @@ process.TFileService = cms.Service("TFileService",
 process.demo = cms.EDAnalyzer('CSCRPCAssociation',
    cscSegTag = cms.InputTag("cscSegments"),
    rpcRecHitTag = cms.InputTag("rpcRecHits")
+   , cscCorrDigisTag = cms.InputTag("simCscTriggerPrimitiveDigis")
 )
 
 process.p = cms.Path(process.demo)

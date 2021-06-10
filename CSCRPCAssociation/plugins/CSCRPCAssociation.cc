@@ -57,6 +57,8 @@
 #include "RecoLocalMuon/RPCRecHit/src/CSCStationIndex.h"
 #include "RecoLocalMuon/RPCRecHit/src/CSCObjectMap.h"
 
+///Rumi
+#include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
 
 //
 // class declaration
@@ -88,6 +90,9 @@ private:
   edm::Handle<RPCRecHitCollection> pRPCrecHits;
   edm::Handle<CSCSegmentCollection> cscsegments;
 
+///Rumi
+  edm::EDGetTokenT<CSCCorrelatedLCTDigiCollection> cscCorrDigis_token;
+  edm::Handle<CSCCorrelatedLCTDigiCollection> cscCorrDigis;
 
   // ----------member data ---------------------------
 //  edm::EDGetTokenT<TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
@@ -110,6 +115,9 @@ private:
 CSCRPCAssociation::CSCRPCAssociation(const edm::ParameterSet& iConfig) // Taking the collections names from the config file
       : rpc_token(consumes<RPCRecHitCollection>(iConfig.getParameter<edm::InputTag>("rpcRecHitTag")))
       , cscseg_token(consumes<CSCSegmentCollection>(iConfig.getParameter<edm::InputTag>("cscSegTag")))
+//Rumi
+      , cscCorrDigis_token(consumes<CSCCorrelatedLCTDigiCollection>(iConfig.getParameter<edm::InputTag>("cscCorrDigisTag")))
+
 {
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
 //  setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -132,6 +140,29 @@ CSCRPCAssociation::~CSCRPCAssociation() {
 void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
         using namespace edm;
+
+//rumi
+        iEvent.getByToken(cscCorrDigis_token, cscCorrDigis);
+
+    for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc = cscCorrDigis.product()->begin();
+          csc != cscCorrDigis.product()->end();
+          csc++) {
+       CSCCorrelatedLCTDigiCollection::Range myCscRange = cscCorrDigis.product()->get((*csc).first);
+       for (CSCCorrelatedLCTDigiCollection::const_iterator lct = myCscRange.first; lct != myCscRange.second; lct++) {
+         int endcap = (*csc).first.endcap();
+         int station = (*csc).first.station();
+         int sector = (*csc).first.triggerSector();
+//         int subSector = CSCTriggerNumbering::triggerSubSectorFromLabels((*csc).first);
+         int ring = (*csc).first.ring();
+         int cscId = (*csc).first.triggerCscId();
+//         int fpga = (subSector ? subSector - 1 : station + 1);
+//         int strip = lct->getStrip();
+//         int keyWire = lct->getKeyWG();
+         int bx = lct->getBX();
+
+std::cout << "endcap: " << endcap << "\tstation: " << station << "\tsector: " << sector << "\tring: " << ring << "\tcscId: " << cscId << "\tbx: " << bx << std::endl; 
+            }}
+
 
         edm::ESHandle<RPCGeometry> rpcGeo;
         edm::ESHandle<CSCGeometry> cscGeo;
