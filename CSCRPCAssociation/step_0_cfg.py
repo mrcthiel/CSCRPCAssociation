@@ -143,5 +143,4 @@ process = customise_aging_1000(process)
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
-# End adding early deletion
-                                                                                                                            154,1         Bot
+# End adding early deletion                                                                                                                            154,1         Bot
