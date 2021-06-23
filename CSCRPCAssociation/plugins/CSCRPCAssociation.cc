@@ -190,14 +190,14 @@ void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 	RPCDigiCollection::DigiRangeIterator detUnitIt;
 	for (detUnitIt = rpcDigis->begin(); detUnitIt != rpcDigis->end(); ++detUnitIt) {
-            const RPCDetId& id = (*detUnitIt).first;
-            auto roll = dynamic_cast<const RPCRoll*>(rpcGeo->roll(id));
-            const RPCDigiCollection::Range& range = (*detUnitIt).second;
+            const RPCDetId id = (*detUnitIt).first;
+            const RPCRoll* roll = dynamic_cast<const RPCRoll*>(rpcGeo->roll(id));
+            const RPCDigiCollection::Range range = (*detUnitIt).second;
 	    // if(id.rawId() != 637567293) continue;
 	    // RPCDetId print-out
 	    //std::cout << "--------------" << std::endl;
 	    //std::cout <<"id: " << id.rawId() << std::endl;
-//	    std::cout << "id: " << id.rawId() << " number of strip " << roll->nstrips() << std::endl;
+	    std::cout << "id: " << id.rawId() << " number of strip " << roll->nstrips() << std::endl;
 	    // Loop over the digis of this DetUnit
 	    for (RPCDigiCollection::const_iterator digiIt = range.first; digiIt != range.second; ++digiIt) {
 //		std::cout << " digi " << *digiIt << std::endl;
@@ -249,7 +249,7 @@ void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup&
                 int chamberId =  (*csc).first.chamberId();
                 int layer = (*csc).first.layer();
                 int chamber = (*csc).first.chamber();
-                if (station==3 && n_cscsegments==1) std::cout << "CSCCORRELATED INFO: " << "endcap: " << endcap <<"\tstation: " << station <<  "\tsector: " << sector << "\tchamber: " << chamber << "\tring: " << ring <<  "\tcscId: " << cscId <<"\tbxData: " << bxData << "\tbx0: " << bx0 << "\tbx: " << bx << std::endl;
+                //if (n_cscsegments==1) std::cout << "CSCCorrLCT: " << "endcap: " << endcap <<"\tstation: " << station <<  "\tsector: " << sector << "\tchamber: " << chamber << "\tring: " << ring <<   "\tbx: " << bx << "\tcscId: " << cscId <<"\tbxData: " << bxData << "\tbx0: " << bx0 << std::endl;
                 n_csccorrelated++;
 		//std::cout << "CSC segment" << std::endl;
 		//if (cscStation==3&&n_csccorrelated ==1)std::cout << "CSCSEGMENT INFO: "<< "cscEndCap: " << cscEndCap << "\tcscStation: " << cscStation << "\tcscSector: " << cscSector << "\tcscChamber: " << cscChamber << "\tcscLayer: " << cscLayer<< "\tcscRing: " << cscRing << std::endl;  
@@ -300,19 +300,46 @@ void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup&
         RPCDetId rpcId = recHit->rpcId();
 	//LocalPoint rpc_position=recHit->localPosition();
         RPCGeomServ rpcsrv(rpcId);
-        int station =  rpcId.station();
-        int region  =  rpcId.region();
-        if (region==0) continue;
-        int ring    =  rpcId.ring();
-        int sector  =  rpcId.sector();
-        int layer   =  rpcId.layer();
-        int BX      =  recHit->BunchX();
-        int subsector = rpcId.subsector();
-        int roll = rpcId.roll();
-        int segment =  rpcsrv.segment();
-        if (station==3 && ring==1) continue;
-        if (station==4 && ring==1) continue;
-	//if (station==3) std::cout <<  "RPC region: " << region << "\tstation: " << station <<  "\tsector: " << sector << "\tchamber: " << segment << "\tsubsector: " << subsector  << "\tring: " << ring << "\tBX: " << BX << "\tchambername: " << rpcsrv.chambername() << "\troll: " << roll << std::endl;
+        int stationRPC =  rpcId.station();
+        int regionRPC  =  rpcId.region();
+        if (regionRPC==0) continue;
+        int ringRPC    =  rpcId.ring();
+        int sectorRPC  =  rpcId.sector();
+        int layerRPC   =  rpcId.layer();
+        int BXRPC      =  recHit->BunchX();
+        int subsectorRPC = rpcId.subsector();
+        int rollRPC = rpcId.roll();
+        int segmentRPC =  rpcsrv.segment();
+        // Skip iRPCs sectors
+	if (stationRPC==3 && ringRPC==1) continue;
+        if (stationRPC==4 && ringRPC==1) continue;
+        for (CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc = cscCorrDigis.product()->begin();
+            csc != cscCorrDigis.product()->end();
+            csc++) {
+            CSCCorrelatedLCTDigiCollection::Range myCscRange = cscCorrDigis.product()->get((*csc).first);
+            for (CSCCorrelatedLCTDigiCollection::const_iterator lct = myCscRange.first; lct != myCscRange.second; lct++) {
+                int endcapCSC = (*csc).first.endcap();
+                int stationCSC = (*csc).first.station();
+                int sectorCSC = (*csc).first.triggerSector();
+                int ringCSC = (*csc).first.ring();
+                int cscIdCSC = (*csc).first.triggerCscId();
+                int bxCSC = lct->getBX();
+                int bxDataCSC = lct->getBXData();
+                int bx0CSC = lct->getBX0();
+                int chamberIdCSC =  (*csc).first.chamberId();
+                int layerCSC = (*csc).first.layer();
+                int chamberCSC = (*csc).first.chamber();
+		if (endcapCSC==2) endcapCSC=-1; //for RPC consistency
+		if (endcapCSC==regionRPC && stationCSC==stationRPC && chamberCSC==segmentRPC){
+		   std::cout << "CSCCorrLCT: " << "endcap: " << endcapCSC <<"\tstation: " << stationCSC <<  "\tsector: " << sectorCSC << "\tchamber: " << chamberCSC << "\tring: " << ringCSC <<   "\tbx: " << bxCSC << "\tcscId: " << cscIdCSC <<"\tbxData: " << bxDataCSC << "\tbx0: " << bx0CSC << std::endl;
+		   std::cout <<  "RPCrecHit: " << " region: " << regionRPC << "\tstation: " << stationRPC <<  "\tsector: " << sectorRPC << "\tchamber: " << segmentRPC <<"\tring: " << ringRPC << "\tBX: " << BXRPC   << "\tsubsector: " << subsectorRPC << " chambername: " << rpcsrv.chambername() << " roll: " << rollRPC << std::endl;
+		   std::cout << " " << std::endl;		   
+		}
+
+	    }
+	}
+
+	//std::cout <<  "RPCrecHit: " << " region: " << region << "\tstation: " << station <<  "\tsector: " << sector << "\tchamber: " << segment <<"\tring: " << ring << "\tBX: " << BX   << "\tsubsector: " << subsector << " chambername: " << rpcsrv.chambername() << " roll: " << roll << std::endl;
      }
      std::map<CSCStationIndex,std::set<RPCDetId>> rollstore;
      rollstore.clear();
