@@ -190,31 +190,39 @@ void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 	RPCDigiCollection::DigiRangeIterator detUnitIt;
 	for (detUnitIt = rpcDigis->begin(); detUnitIt != rpcDigis->end(); ++detUnitIt) {
-            const RPCDetId id = (*detUnitIt).first;
-            const RPCRoll* roll = dynamic_cast<const RPCRoll*>(rpcGeo->roll(id));
-            const RPCDigiCollection::Range range = (*detUnitIt).second;
-	    // if(id.rawId() != 637567293) continue;
-	    // RPCDetId print-out
-	    //std::cout << "--------------" << std::endl;
-	    //std::cout <<"id: " << id.rawId() << std::endl;
-	    std::cout << "id: " << id.rawId() << " number of strip " << roll->nstrips() << std::endl;
-	    // Loop over the digis of this DetUnit
-	    for (RPCDigiCollection::const_iterator digiIt = range.first; digiIt != range.second; ++digiIt) {
-//		std::cout << " digi " << *digiIt << std::endl;
-//                if (digiIt->strip() < 1 || digiIt->strip() > roll->nstrips()) {
-//		   std::cout << " XXXXXXXXXXXXX Problemt with " << id << std::endl;
-//                } 
-/*              for (std::vector<PSimHit>::const_iterator simHit = simHits->begin(); simHit != simHits->end(); simHit++) {
-                    RPCDetId rpcId((*simHit).detUnitId());
-                    if (rpcId == id && abs((*simHit).particleType()) == 13) {
-                       std::cout << "entry: " << (*simHit).entryPoint() << std::endl
-                                 << "exit: " << (*simHit).exitPoint() << std::endl
-                                 << "TOF: " << (*simHit).timeOfFlight() << std::endl;
-                    }
-                }
-*/
-           }
-      }
+	    const RPCDetId id = (*detUnitIt).first;
+            if (dynamic_cast<const RPCRoll*>(rpcGeo->roll(id)) != 0){//joao insert this if
+               const RPCRoll* roll = dynamic_cast<const RPCRoll*>(rpcGeo->roll(id));
+               const RPCDigiCollection::Range range = (*detUnitIt).second;
+	       // RPCDetId print-out
+	       std::cout << "id: " << id.rawId() << " number of strip " << roll->nstrips() << std::endl;
+	       // Loop over the digis of this DetUnit
+	       // Take the global coordiantes of the center of the rpc roll (eta partition)
+	       const int nstrips = roll->nstrips();
+	       float middleStrip = nstrips/2.;
+	       const LocalPoint& middleOfRoll = roll->centreOfStrip(middleStrip);
+	       const GlobalPoint& globMiddleRol = roll->toGlobal(middleOfRoll);
+	       std::cout << "eta " << globMiddleRol.eta() << "\tphi " << globMiddleRol.phi() << std::endl;
+	       //take the list of fired strips for a given roll
+	       int digisInRoll = 0;
+	       for (RPCDigiCollection::const_iterator digiIt = range.first; digiIt != range.second; ++digiIt) {
+	  	   //std::cout << " digi " << *digiIt << std::endl;
+                   if (digiIt->strip() < 1 || digiIt->strip() > roll->nstrips()) {
+		      std::cout << " XXXXXXXXXXXXX Problemt with " << id << std::endl;
+                   }  
+		   int bx=(*digiIt).bx();
+	           digisInRoll++;
+		   int strip= (*digiIt).strip();
+		   std::cout << "strip " <<  strip << "\tbx " <<  bx << std::endl;     
+		   //take the global coordinates of the center of a given strip
+	           const LocalPoint& middleOfStrip = roll->centreOfStrip(strip);
+	           const GlobalPoint& globMiddleStrip = roll->toGlobal(middleOfStrip);
+                   std::cout << "eta strip " << globMiddleStrip.eta() << "\tphi strip " << globMiddleStrip.phi() << std::endl;
+  
+		}	
+	        std::cout << "digis in roll " << digisInRoll << std::endl;
+	     }
+          }
 
     //std::cout << "CSC INFO" << std::endl;
     int n_cscsegments = 0;
@@ -331,9 +339,9 @@ void CSCRPCAssociation::analyze(const edm::Event& iEvent, const edm::EventSetup&
                 int chamberCSC = (*csc).first.chamber();
 		if (endcapCSC==2) endcapCSC=-1; //for RPC consistency
 		if (endcapCSC==regionRPC && stationCSC==stationRPC && chamberCSC==segmentRPC){
-		   std::cout << "CSCCorrLCT: " << "endcap: " << endcapCSC <<"\tstation: " << stationCSC <<  "\tsector: " << sectorCSC << "\tchamber: " << chamberCSC << "\tring: " << ringCSC <<   "\tbx: " << bxCSC << "\tcscId: " << cscIdCSC <<"\tbxData: " << bxDataCSC << "\tbx0: " << bx0CSC << std::endl;
-		   std::cout <<  "RPCrecHit: " << " region: " << regionRPC << "\tstation: " << stationRPC <<  "\tsector: " << sectorRPC << "\tchamber: " << segmentRPC <<"\tring: " << ringRPC << "\tBX: " << BXRPC   << "\tsubsector: " << subsectorRPC << " chambername: " << rpcsrv.chambername() << " roll: " << rollRPC << std::endl;
-		   std::cout << " " << std::endl;		   
+		   //std::cout << "CSCCorrLCT: " << "endcap: " << endcapCSC <<"\tstation: " << stationCSC <<  "\tsector: " << sectorCSC << "\tchamber: " << chamberCSC << "\tring: " << ringCSC <<   "\tbx: " << bxCSC << "\tcscId: " << cscIdCSC <<"\tbxData: " << bxDataCSC << "\tbx0: " << bx0CSC << std::endl;
+		   //std::cout <<  "RPCrecHit: " << " region: " << regionRPC << "\tstation: " << stationRPC <<  "\tsector: " << sectorRPC << "\tchamber: " << segmentRPC <<"\tring: " << ringRPC << "\tBX: " << BXRPC   << "\tsubsector: " << subsectorRPC << " chambername: " << rpcsrv.chambername() << " roll: " << rollRPC << std::endl;
+		   //std::cout << " " << std::endl;		   
 		}
 
 	    }
