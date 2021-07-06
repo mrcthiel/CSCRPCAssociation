@@ -9,12 +9,9 @@ To get the code:
 > cd CSCRPCAssociation\
 > git checkout new_branch\
 > scram b -j8\
-> cd CSCRPCAssociation\
+> cd CSCRPCAssociation
 
-To run over a RAW sample and create a root file with the CSC and RPC collection:
->cmsRun L1T-PhaseIITDRSpring19GS-00007-fragment_py_GEN_SIM.py\
->cmsRun step1_DIGI_L1_L1TrackTrigger_DIGI2RAW_HLT.py\
->cmsRun step2_RAW2DIGI_L1Reco_RECO.py 
-
-To run the analyzer and print the CSC-RPC correlations:
+To run the analyzer and try to print the RE4 information:
 >cmsRun cscrpc_reco.py
+
+The information that access the RE4 information is between lines 289 and 384
