@@ -1,16 +1,15 @@
 # CSCRPCAssociation
 
-This is a simple analyzer created with the command *mkedanlzr* and modified to print the CSC-RPC correlations on the screen. The code was adapted from the module:
-https://github.com/cms-sw/cmssw/blob/master/RecoLocalMuon/RPCRecHit/src/CSCSegtoRPC.cc
-
 To run, follow the commands.
 To get the code:
-> cmsrel CMSSW_10_6_0_patch2\
+> cmsrel CMSSW_12_0_0_pre1\
+> cd CMSSW_12_0_0_pre1/src\
 > cmsenv\
-> cd CMSSW_10_6_0_patch2/src/\
-> git clone git@github.com:mrcthiel/CSCRPCAssociation.git\
+> git clone git@github.com:jgomespi/CSCRPCAssociation.git\
+> cd CSCRPCAssociation\
+> git checkout new_branch\
 > scram b -j8\
-> cd CSCRPCAssociation/CSCRPCAssociation
+> cd CSCRPCAssociation\
 
 To run over a RAW sample and create a root file with the CSC and RPC collection:
 >cmsRun L1T-PhaseIITDRSpring19GS-00007-fragment_py_GEN_SIM.py\
