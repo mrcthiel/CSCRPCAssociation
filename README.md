@@ -14,4 +14,4 @@ To get the code:
 To run the analyzer and try to print the RE4 information:
 >cmsRun cscrpc_reco.py
 
-The information that access the RE4 information is between lines 289 and 384
+The information that access the RE4 information is between lines 289 and 384, mostly on line 377.
