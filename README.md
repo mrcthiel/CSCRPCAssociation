@@ -11,7 +11,7 @@ To get the code:
 > scram b -j8\
 > cd CSCRPCAssociation
 
-To run the analyzer and try to print the RE4 information:
+To run the analyzer (which is at plugins/) and try to print the RE4 information:
 >cmsRun cscrpc_reco.py
 
 The information that access the RE4 information is between lines 289 and 384, mostly on line 377.
